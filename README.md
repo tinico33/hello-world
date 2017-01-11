@@ -1,5 +1,5 @@
-# Volet
-Projet "Volet"
+# Shutter
+Projet "Shutter"
 
 Ce projet est un projet personnel permettant de gérer des volets électrique via des modules WiFi ESP8266.
 
