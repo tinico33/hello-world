@@ -2,6 +2,7 @@
     #include <WiFiClient.h>
     #include <ESP8266WebServer.h>
     #include <ESP8266mDNS.h>
+    #include "shutter.h"
     
     const char* ssid = "Choux et Muxu";
     const char* password = "NP26badG33114LB";
