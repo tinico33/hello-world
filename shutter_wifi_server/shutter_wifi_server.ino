@@ -8,26 +8,28 @@
     const char* password = "NP26badG33114LB";
     
     ESP8266WebServer server(80); // on instancie un serveur ecoutant sur le port 80
-    
-    int myPins[] = {D0, D1, D2, D3, D4};
 
-    int getPinParameter() {
-        int pin = server.arg("volet").toInt();
-        Serial.print("Pin parameter : ");
-        Serial.println(myPins[pin]);
-        return myPins[pin];
-    }
+    const int shutterUp = D5;
+    const int shutterDown = D6;
+    const int buttonUp = D7;
+    const int buttonDown = D8;
+    const int lightSensor = A0;
+
+    Shutter shutter;
 
     void open() {
-        int pin = getPinParameter();
-        digitalWrite(pin, HIGH);
-        server.send(200, "text/plain", String(pin) + " est allumé");
+        shutter.openCompletly();
+        server.send(200, "text/plain", "Shutter is opening");
     }
     
     void close() {
-        int pin = getPinParameter();
-        digitalWrite(pin, LOW);
-        server.send(200, "text/plain", String(pin) + " est éteint");
+        shutter.closeCompletly();
+        server.send(200, "text/plain", "Shutter is closing");
+    }
+    
+    void stop() {
+        shutter.stop();
+        server.send(200, "text/plain", "Shutter stop");
     }
     
     void setup(void){
@@ -49,19 +51,22 @@
       // ici on va juste repondre avec un "hello !"
       server.on("/open", open);
       server.on("/close", close);
+      server.on("/stop", stop);
       
       // on commence a ecouter les requetes venant de l'exterieur
       server.begin();
-    
-      pinMode(D0, OUTPUT);
-      pinMode(D1, OUTPUT);
-      pinMode(D2, OUTPUT);
-      pinMode(D3, OUTPUT);
-      pinMode(D4, OUTPUT);
+      
+      shutter.attach(shutterUp, shutterDown, buttonUp, buttonDown);
+      
+      pinMode(lightSensor, INPUT);
     }
     
     void loop(void){
       // a chaque iteration, on appelle handleClient pour que les requetes soient traitees
       server.handleClient();
+
+      shutter.action();
+  
+      delay(20);
     }
     
