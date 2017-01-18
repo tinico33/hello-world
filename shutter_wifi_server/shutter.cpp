@@ -6,11 +6,11 @@ Shutter::Shutter() {
   inAction = false;
 }
 
-void Shutter::attach(char ru, char rd, char bu, char bd) {
-  relayUp = ru;
-  relayDown = rd;
-  buttonUp = bu;
-  buttonDown = bd;
+void Shutter::attach(char relayUp, char relayDown, char buttonUp, char buttonDown) {
+  this->relayUp = relayUp;
+  this->relayDown = relayDown;
+  this->buttonUp = buttonUp;
+  this->buttonDown = buttonDown;
   
   pinMode(relayDown, OUTPUT);
   pinMode(relayUp, OUTPUT);
@@ -36,6 +36,24 @@ void Shutter::close() {
   }
 }
 
+void Shutter::setTimeStop() {
+  timeStop = millis() + TIME_SHORT_ACTION;
+}
+
+void Shutter::openCompletly() {
+  if(!inAction) {
+    open();
+    setTimeStop();
+  }
+}
+
+void Shutter::closeCompletly() {
+  if(!inAction) {
+    close();
+    setTimeStop();
+  }
+}
+
 void Shutter::stop() {
   digitalWrite(relayUp, LOW);
   digitalWrite(relayDown, LOW);
@@ -47,7 +65,7 @@ void Shutter::stop() {
 
 void Shutter::action() {
   buttonUpValue = digitalRead(buttonUp);
-  
+
   if(buttonUpValue == HIGH) {
     // Le bouton est enfoncé
     if(buttonUpMemory == LOW) {
@@ -62,18 +80,12 @@ void Shutter::action() {
       // Le volet est en train de descendre 
       stop();
     } else if(millis()-timeUp < 200) {
-      timeStop = millis() + TIME_SHORT_ACTION;
+      setTimeStop();
     } else {
       stop();
     }
     buttonUpMemory = buttonUpValue;
-  } else if(timeStop != 0){
-    // Le bouton est relaché depuis quelque tour, mais le volet est en mouvement
-    if(millis() > timeStop) {
-      timeStop = 0;
-      stop();
-    }
-  }
+  } 
 
   buttonDownValue = digitalRead(buttonDown);
   
@@ -91,12 +103,14 @@ void Shutter::action() {
       // Le volet est en train de monter 
       stop();
     } else if(millis()-timeDown < 200) {
-      timeStop = millis() + TIME_SHORT_ACTION;
+      setTimeStop();
     } else {
       stop();
     }
     buttonDownMemory = buttonDownValue;
-  } else if(timeStop != 0) {
+  }
+
+  if(timeStop != 0){
     // Le bouton est relaché depuis quelque tour, mais le volet est en mouvement
     if(millis() > timeStop) {
       timeStop = 0;
