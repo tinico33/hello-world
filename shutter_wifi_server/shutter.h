@@ -6,12 +6,14 @@ class Shutter {
     Shutter();
     void attach(char relayUp, char relayDown, char buttonUp, char buttonDown);
     void action();
-    void openCompletly();
-    void closeCompletly();
-    void stop();
+    int openCompletly();
+    int closeCompletly();
+    void stop(bool timeout);
+    int getState();
   private :
     void open();
     void close();
+    bool inAction();
     void setTimeStop();
     char relayUp;
     char relayDown;
@@ -24,6 +26,7 @@ class Shutter {
     unsigned long timeUp;
     unsigned long timeDown;
     unsigned long timeStop;
-    bool inAction;
+    enum state{GOING_UP, OPENED, GOING_DOWN, CLOSED, STOPED};
+    state state;
 };
 
