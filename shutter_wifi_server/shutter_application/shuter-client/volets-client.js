@@ -3,8 +3,8 @@
  */
 var voletsApplication = new angular.module("voletsApplication", []);
 
-var serveurVolet = 'http://localhost:9000';
-//var serveurVolet = 'http://localhost:9000/volets';
+//var serveurVolet = 'http://localhost:9000';
+var serveurVolet = 'http://serveur-dell:9000';
 
 var voletsController = voletsApplication.controller("voletsController", function($scope, $http) {
 
