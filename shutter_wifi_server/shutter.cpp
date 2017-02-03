@@ -80,7 +80,10 @@ void Shutter::stop(bool timeout) {
       state = CLOSED;
     }
   } else {
-    state = STOPED;
+    if(inAction()) {
+      // On ne change le statut à stoped que si le volet est effectivement en mouvement
+      state = STOPED;
+    }
   }
   
   timeUp = 0;

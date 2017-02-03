@@ -15,6 +15,8 @@ const int buttonUp = D7;
 const int buttonDown = D8;
 const int lightSensor = A0;
 
+int connecionTestTimer = 0;
+
 Shutter shutter;
 
 void open() {  
@@ -34,14 +36,16 @@ void status() {
   server.send(200, "text/plain", String(shutter.getState()));
 }
 
-void setup(void){
-  Serial.begin(9600);
-  
+bool connectionActiv() {
+  return WiFi.status() == WL_CONNECTED;
+}
+
+void connection() {
   // on demande la connexion au WiFi
   WiFi.begin(ssid, password);
   Serial.println("");
   // on attend d'etre connecte au WiFi avant de continuer
-  while (WiFi.status() != WL_CONNECTED) {
+  while (!connectionActiv()) {
     delay(500);
     Serial.print(".");
   }
@@ -49,6 +53,14 @@ void setup(void){
   Serial.println("");
   Serial.print("IP address: ");
   Serial.println(WiFi.localIP());
+}
+
+void setup(void){
+  Serial.begin(9600);
+
+  // Connexion au réseau WiFi
+  connection();
+  
   // on definit ce qui doit etre fait lorsque la route /bonjour est appelee
   // ici on va juste repondre avec un "hello !"
   server.on("/open", open);
@@ -65,6 +77,21 @@ void setup(void){
 }
 
 void loop(void){
+  if(connecionTestTimer == 0) {
+    connecionTestTimer = millis() + CONNECTION_TEST_TIMER;
+  } else {
+    if(millis() > connecionTestTimer) {
+      connecionTestTimer = 0;
+      Serial.println("Vérification de connection ...");
+      if(!connectionActiv()) {
+        Serial.println("La connexion est tombée reconnexion en cours...");
+        connection();
+      }
+    }
+  }
+
+  
+  
   // a chaque iteration, on appelle handleClient pour que les requetes soient traitees
   server.handleClient();
 

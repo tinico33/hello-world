@@ -1,5 +1,6 @@
 #define TIME_SHORT_PUSH 200
 #define TIME_SHORT_ACTION 15000
+#define CONNECTION_TEST_TIMER 5000
 
 class Shutter {
   public :
@@ -26,7 +27,7 @@ class Shutter {
     unsigned long timeUp;
     unsigned long timeDown;
     unsigned long timeStop;
-    enum state{GOING_UP, OPENED, GOING_DOWN, CLOSED, STOPED};
-    state state;
+    enum State{GOING_UP, OPENED, GOING_DOWN, CLOSED, STOPED};
+    State state;
 };
 
