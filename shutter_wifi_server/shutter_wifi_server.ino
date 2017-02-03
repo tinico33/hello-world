@@ -82,10 +82,13 @@ void loop(void){
   } else {
     if(millis() > connecionTestTimer) {
       connecionTestTimer = 0;
-      Serial.println("Vérification de connection ...");
+      Serial.print("Check connexion : ");
       if(!connectionActiv()) {
-        Serial.println("La connexion est tombée reconnexion en cours...");
+        Serial.println("KO");
+        Serial.println("Connexion...");
         connection();
+      } else {
+        Serial.println("OK");
       }
     }
   }

@@ -1,6 +1,6 @@
 #define TIME_SHORT_PUSH 200
 #define TIME_SHORT_ACTION 15000
-#define CONNECTION_TEST_TIMER 5000
+#define CONNECTION_TEST_TIMER 10000
 
 class Shutter {
   public :
