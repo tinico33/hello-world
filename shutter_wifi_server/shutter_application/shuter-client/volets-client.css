@@ -3,6 +3,27 @@ body {
 	font-family: sans-serif;
 }
 
+.bouton {
+	width: 70px;
+    height: 70px;
+}
+
+.actionColumn {
+    width: 145px;
+}
+
+.shutterColumn {
+    width: 240px;
+}
+
+.messageColumn {
+	width: 600px;
+}
+
+.message {
+	padding-left: 20px;
+}
+
 #header {
 	position: absolute;
 	top: 0px;
@@ -14,7 +35,7 @@ body {
 	transition: all 1s;
 }
 
-div input {
+dev input {
 	cursor: pointer;
 	margin: 5px;
 	padding: 0px 20px 45px 20px;
@@ -27,12 +48,12 @@ div input {
 	height: 40px;
 }
 
-div input:hover {
+dev input:hover {
 	background: rgb(90, 190, 87);
 	transition: all 150ms;
 }
 
-div input:active {
+dev input:active {
 	border: 1px solid rgba(180, 180, 180, 0.2);
 	background: rgba(77, 168, 74, 1);
 	transition: none;
@@ -48,8 +69,5 @@ table thead {
 
 .tableDescription {
 	font-size: x-large;
-}
-
-.message-column {
-	width: 60%;
+    height: 70px;
 }

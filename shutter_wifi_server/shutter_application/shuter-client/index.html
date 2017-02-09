@@ -5,19 +5,12 @@
 	<title>Client de l'application Shutter</title>
 	<script type="text/javascript" src="angular.min.js"></script>
 	<script type="text/javascript" src="volets-client.js"></script>
-    <!-- Bootstrap -->
     <link href="volets-client.css" rel="stylesheet">
-    <link href="bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body ng-app="voletsApplication">
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    <!-- Include all compiled plugins (below), or include individual files as needed -->
-    <script src="bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
 	<div id="div_control" ng_controller="voletsController">
-<!-- 		<div> -->
-<!-- 			<input type="button" id="input_delete" value="Supprimer" ng-click="deleteAction()" /> -->
-<!-- 		</div> -->
 		<div class="panel panel-default" ng-include="'volets.html'"></div>
 	</div>
 </body>

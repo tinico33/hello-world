@@ -1,26 +1,24 @@
 <table class="table table-striped id="table_volets">
 	<thead>
 		<tr>
-			<th>Volet</th>
-			<th>Ouvrir</th>
-			<th>Fermer</th>
-			<th class="message-column">Message</th>
+			<th class="shutterColumn">Volet</th>
+			<th class="actionColumn">Action</th>
+			<th class="messageColumn">Message</th>
 		</tr>
 	</thead>
 	<tbody>
 		<tr ng-repeat="v in volets">
 			<td class="tableDescription">{{v.description}}</td>
 			<td>
-				<button id="up-{{v.id}}" type="button" class="btn btn-default btn-lg" ng-click="ouvrir(v.id)">
-				  <span class="glyphicon glyphicon-chevron-up"></span>
+				<button id="up-{{v.id}}" type="button" class="bouton" ng-click="ouvrir(v.id)" hidden="true">
+				  UP
 				</button>
-			</td>
-			<td>
-				<button id="down-{{v.id}}" type="button" class="btn btn-default btn-lg" ng-click="fermer(v.id)">
-				  <span class="glyphicon glyphicon-chevron-down"></span>
+				<button id="down-{{v.id}}" type="button" class="bouton" ng-click="fermer(v.id)" hidden="true">
+				  DOWN
 				</button>
+				<img id="loading-{{v.id}}" src="load.gif">
 			</td>
-			<td>{{messages[v.id]}}</td>
+			<td class="message">{{messages[v.id]}}</td>
 		</tr>
 	</tbody>
 </table>

@@ -6,27 +6,27 @@ var url = require('url');
 var http = require('http');
 var fs = require('fs');
 var port = 9000;
-var voletFile = './volets.json';
 
+var voletFile = './volets.json';
 var volets = require('./volets');
 var voletsJson = fs.readFileSync(voletFile).toString();
 var voletsData = JSON.parse(voletsJson);
 
-http.createServer(function(req, res) {
+http.createServer(function(request, response) {
     // Website you wish to allow to connect
-    res.setHeader('Access-Control-Allow-Origin', '*');
+    response.setHeader('Access-Control-Allow-Origin', '*');
 
     // Request methods you wish to allow
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+    response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
 
     // Request headers you wish to allow
-    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+    response.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
 
     // Set to true if you need the website to include cookies in the requests
     // sent to the API (e.g. in case you use sessions)
-    res.setHeader('Access-Control-Allow-Credentials', true);
+    response.setHeader('Access-Control-Allow-Credentials', true);
 
-    var pathname = req.url;
+    var pathname = request.url;
 
     var resultat = "";
 
@@ -35,14 +35,14 @@ http.createServer(function(req, res) {
     } else {
 		resultat = "Le chemin demand&eacute; est introuvable : " + pathname;
 
-		res.writeHead(404, {
+		response.writeHead(404, {
 		    'Content-Type' : 'application/json',
 		    'Charset' : 'utf-8'
 		});
     }
     console.log(resultat);
-    res.write(resultat);
-    res.end();
+    response.write(resultat);
+    response.end();
 }).listen(port);
 
 var getVoletById = function(id) {

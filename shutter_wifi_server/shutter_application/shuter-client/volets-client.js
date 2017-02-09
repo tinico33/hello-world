@@ -3,8 +3,33 @@
  */
 var voletsApplication = new angular.module("voletsApplication", []);
 
-//var serveurVolet = 'http://localhost:9000';
-var serveurVolet = 'http://serveur-dell:9000';
+var serveurVolet = 'http://localhost:9000';
+//var serveurVolet = 'http://serveur-dell:9000';
+
+function getStatusLabel(status) {
+	var label;
+	console.log(status);
+	switch(parseInt(status)) {
+	    case 0:
+	        label = "Ouverture en cours";
+	        break;
+	    case 1:
+	        label = "Volet ouvert";
+	        break;
+	    case 2:
+	        label = "Fermeture en cours";
+	        break;
+	    case 3:
+	        label = "Volet fermé";
+	        break;
+	    case 4:
+	        label = "Volet arrêté";
+	        break;
+	    default:
+	        label = "Etat inconnu";
+	}
+	return label;
+}
 
 var voletsController = voletsApplication.controller("voletsController", function($scope, $http) {
 
@@ -13,7 +38,7 @@ var voletsController = voletsApplication.controller("voletsController", function
     $http.get(serveurVolet + '/infos').then(function(response) {
 		$scope.volets = response.data;
 		for (var i = 0; i < $scope.volets.length; i++) {
-			$scope.messages[$scope.volets.id] = "";
+			loadedStatus($scope.volets[i].id);
 		}
     }, function(response) {
 		alert(response.data+serveurVolet);
@@ -31,7 +56,19 @@ var voletsController = voletsApplication.controller("voletsController", function
 	    return volet;
 	}
 
-	var updateStatus = function(shutter) {
+	function loadedStatus(shutterId) {
+    	var shutter = getShutterById(shutterId);
+		getStatus(shutter, function successCallback(response) {
+    		document.getElementById("loading-" + shutterId).setAttribute("hidden", "true");
+    		document.getElementById("up-" + shutterId).removeAttribute("hidden");
+    		document.getElementById("down-" + shutterId).removeAttribute("hidden");
+    		$scope.messages[shutterId] = getStatusLabel(response.data);
+		}, function errorCallback(response) {
+    		loadedStatus(shutterId);
+		});
+	}
+
+	function getStatus(shutter, successCallback, errorCallback) {
 		var request = {
 		    method : 'GET',
 		    url : shutter.site+'/status',
@@ -39,8 +76,12 @@ var voletsController = voletsApplication.controller("voletsController", function
 				'Content-Type' : undefined
 		    }
 		}
-	    $http(request).then(function successCallback(response) {
-    		$scope.messages[shutter.id]=response.data;
+	    $http(request).then(successCallback, errorCallback);
+	}
+
+	var updateStatus = function(shutter) {
+		getStatus(shutter, function successCallback(response) {
+    		$scope.messages[shutter.id] = getStatusLabel(response.data);
 		}, function errorCallback(response) {
     		$scope.messages[shutter.id]="ERREUR : "+response.config.url;
 		});

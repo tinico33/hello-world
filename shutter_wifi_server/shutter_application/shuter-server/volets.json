@@ -1,16 +1,6 @@
 [ {
     "id" : "0",
-    "nom" : "Chambre 1",
-    "description" : "Chambre de devant",
-    "site" : "http://192.168.1.23"
-}, {
-    "id" : "1",
-    "nom" : "Chambre 2",
-    "description" : "Chambre de derrière",
-    "site" : "http://localhost:9100"
-}, {
-    "id" : "2",
-    "nom" : "Mezzanine",
-    "description" : "Mezzanine",
-    "site" : "http://192.168.1.22"
+    "nom" : "Bureau",
+    "description" : "Bureau",
+    "site" : "http://bureau"
 } ]
