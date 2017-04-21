@@ -15,7 +15,10 @@ const int buttonUp = D7;
 const int buttonDown = D8;
 const int lightSensor = A0;
 
-int connecionTestTimer = 0;
+unsigned long connectionTestTimer = 0;
+unsigned long connectionTestTimerStart = 0;
+
+int sensorValue = 0;        // value read from the pot
 
 Shutter shutter;
 
@@ -55,33 +58,15 @@ void connection() {
   Serial.println(WiFi.localIP());
 }
 
-void setup(void){
-  Serial.begin(9600);
-
-  // Connexion au réseau WiFi
-  connection();
+void testConnexion() {
+  connectionTestTimer = millis();
   
-  // on definit ce qui doit etre fait lorsque la route /bonjour est appelee
-  // ici on va juste repondre avec un "hello !"
-  server.on("/open", open);
-  server.on("/close", close);
-  server.on("/stop", stop);
-  server.on("/status", status);
-  
-  // on commence a ecouter les requetes venant de l'exterieur
-  server.begin();
-  
-  shutter.attach(shutterUp, shutterDown, buttonUp, buttonDown);
-  
-  pinMode(lightSensor, INPUT);
-}
-
-void loop(void){
-  if(connecionTestTimer == 0) {
-    connecionTestTimer = millis() + CONNECTION_TEST_TIMER;
+  if(connectionTestTimer < connectionTestTimerStart) {
+    // There was had a reset of millis();
+    connectionTestTimerStart = millis();
   } else {
-    if(millis() > connecionTestTimer) {
-      connecionTestTimer = 0;
+    if(connectionTestTimer - connectionTestTimerStart > CONNECTION_TEST_TIMER) {
+      // Le timer est atteint, on test la connexion
       Serial.print("Check connexion : ");
       if(!connectionActiv()) {
         Serial.println("KO");
@@ -90,14 +75,39 @@ void loop(void){
       } else {
         Serial.println("OK");
       }
+      connectionTestTimerStart = millis();
     }
   }
+}
 
+void setup(void){
+  Serial.begin(9600);
+
+  // Connexion au réseau WiFi
+  connection();
   
+  // Définitin des routes
+  server.on("/open", open);
+  server.on("/close", close);
+  server.on("/stop", stop);
+  server.on("/status", status);
   
+  // Lancement de l'écoute des requetes venant de l'exterieur
+  server.begin();
+
+  shutter.attach(shutterUp, shutterDown, buttonUp, buttonDown);
+
+  pinMode(lightSensor, INPUT);
+}
+
+void loop(void){
+  // Test la connexion pour vérifier qu'elle est toujours UP et reconnecte si besoin
+  testConnexion();
+
   // a chaque iteration, on appelle handleClient pour que les requetes soient traitees
   server.handleClient();
 
+  // a chaque iteration, on verifie si une action a lieu sur les boutons du volet
   shutter.action();
 
   delay(20);
