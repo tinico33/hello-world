@@ -15,10 +15,10 @@ const int buttonUp = D7;
 const int buttonDown = D8;
 const int lightSensor = A0;
 
-unsigned long connectionTestTimer = 0;
-unsigned long connectionTestTimerStart = 0;
+unsigned long automaticActionsTimer = 0;
+unsigned long automaticActionsTimerStart = 0;
 
-int sensorValue = 0;        // value read from the pot
+int lightValueToClose = 1025;
 
 Shutter shutter;
 
@@ -37,6 +37,13 @@ void stop() {
 
 void status() {
   server.send(200, "text/plain", String(shutter.getState()));
+}
+
+void save() {
+  lightValueToClose = analogRead(lightSensor);
+  Serial.print("Valeur enregistrée : ");
+  Serial.println(lightValueToClose);
+  server.send(200, "text/plain", String(lightValueToClose));
 }
 
 bool connectionActiv() {
@@ -59,24 +66,21 @@ void connection() {
 }
 
 void testConnexion() {
-  connectionTestTimer = millis();
-  
-  if(connectionTestTimer < connectionTestTimerStart) {
-    // There was had a reset of millis();
-    connectionTestTimerStart = millis();
+  Serial.print("Check connexion : ");
+  if(!connectionActiv()) {
+    Serial.println("KO");
+    Serial.println("Connexion...");
+    connection();
   } else {
-    if(connectionTestTimer - connectionTestTimerStart > CONNECTION_TEST_TIMER) {
-      // Le timer est atteint, on test la connexion
-      Serial.print("Check connexion : ");
-      if(!connectionActiv()) {
-        Serial.println("KO");
-        Serial.println("Connexion...");
-        connection();
-      } else {
-        Serial.println("OK");
-      }
-      connectionTestTimerStart = millis();
-    }
+    Serial.println("OK");
+  }
+}
+
+void autoClose() {
+  int sensorValue = analogRead(lightSensor);
+  if((lightValueToClose + 10) / 10  < (sensorValue - 10) / 10) {
+    // La lumière lue est plus sombre que la lumière enregistrée => On ferme
+    shutter.closeCompletly();
   }
 }
 
@@ -91,6 +95,7 @@ void setup(void){
   server.on("/close", close);
   server.on("/stop", stop);
   server.on("/status", status);
+  server.on("/save", save);
   
   // Lancement de l'écoute des requetes venant de l'exterieur
   server.begin();
@@ -101,8 +106,23 @@ void setup(void){
 }
 
 void loop(void){
-  // Test la connexion pour vérifier qu'elle est toujours UP et reconnecte si besoin
-  testConnexion();
+  automaticActionsTimer = millis();
+  
+  if(automaticActionsTimer < automaticActionsTimerStart) {
+    // There was had a reset of millis();
+    automaticActionsTimerStart = millis();
+  } else {
+    if(automaticActionsTimer - automaticActionsTimerStart > AUTOMATICS_ACTIONS_TIMER) {
+      // Le timer est atteint
+      
+      // on test la connexion et on reconnecte si besoin
+      testConnexion();
+
+      // on test s'il fait assez sombre pour fermer le volet automatiquement
+      autoClose();
+      automaticActionsTimerStart = millis();
+    }
+  }
 
   // a chaque iteration, on appelle handleClient pour que les requetes soient traitees
   server.handleClient();
